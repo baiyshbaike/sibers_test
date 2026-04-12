@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SibersProject.API/SibersProject.API.csproj" />
+  <Project Path="SibersProject.BLL/SibersProject.BLL.csproj" />
+  <Project Path="SibersProject.DAL/SibersProject.DAL.csproj" />
+  <Project Path="SibersProject.Tests/SibersProject.Tests.csproj" />
+</Solution>
