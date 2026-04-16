@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SibersProject.DAL.Data;
+using SibersProject.DAL.Repositories;
 using SibersProject.DAL.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,9 @@ namespace SibersProject.DAL.Extensions
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
             // Register repositories / Регистрируем репозитории
-            services.AddScoped<IEmployeeRepository,IEmployeeRepository>();
-            services.AddScoped<IProjectRepository,IProjectRepository>();
-            services.AddScoped<ITaskRepository,ITaskRepository>();
+            services.AddScoped<IEmployeeRepository,EmployeeRepository>();
+            services.AddScoped<IProjectRepository,ProjectRepository>();
+            services.AddScoped<ITaskRepository,TaskRepository>();
             
             return services;
         }
