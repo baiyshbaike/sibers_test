@@ -7,6 +7,8 @@ using System.Text;
 
 namespace SibersProject.BLL.Extensions
 {
+    // #расширения_сервисов_BLL / #bll_service_extensions
+    // Registers all BLL services into the DI container
     public static class BllServiceExtensions
     {
         public static IServiceCollection AddBllServices(this IServiceCollection services)
