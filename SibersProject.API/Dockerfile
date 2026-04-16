@@ -2,25 +2,26 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY ["SibersProjec.API/SibersProject.API.csproj", "SibersProject.API/"]
-COPY ["SibersProjec.API/SibersProject.BLL.csproj", "SibersProject.BLL/"]
-COPY ["SibersProjec.API/SibersProject.DAL.csproj", "SibersProject.DAL/"]
+# Copy project files for restore (layer caching)
+COPY ["SibersProject.API/SibersProject.API.csproj", "SibersProject.API/"]
+COPY ["SibersProject.BLL/SibersProject.BLL.csproj", "SibersProject.BLL/"]
+COPY ["SibersProject.DAL/SibersProject.DAL.csproj", "SibersProject.DAL/"]
 
 RUN dotnet restore "SibersProject.API/SibersProject.API.csproj"
 
 #Copy all soruce files
 COPY . .
 
-WORKDIR "/src/SiversProject.API"
-RUN dotnet build "SibersProject.APi.csproj" -c Release -o /app/build
+WORKDIR "/src/SibersProject.API"
+RUN dotnet build "SibersProject.API.csproj" -c Release -o /app/build
 
 #Publish stage / Этап пабликация
-FROM build as publish
-RUN dotnet publish "SibersProject.API.csproj" -c Realease -o /app/build/publish /p:UseAppHost=false
+FROM build AS publish
+RUN dotnet publish "SibersProject.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 
 #Runtime stage / Этап запуска
-FROM mcr.microsoft.com/dotnet/asp.net:10.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 EXPOSE 8080
 COPY --from=publish /app/publish .

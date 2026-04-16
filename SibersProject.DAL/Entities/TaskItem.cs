@@ -23,4 +23,8 @@ public class TaskItem
     public Guid? ExecutorId { get; set; }
     // Navigation: exevutor / Навигация: исполнитель
     public Employee? Executor { get; set; }
+    // FK to task author / Внешний ключ на автор
+    public Guid AuthorId { get; set; }
+    // Navigation: author / Навигация: автор
+    public Employee Author { get; set; } = null!;
 }

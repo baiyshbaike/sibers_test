@@ -3,7 +3,7 @@
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sibers_mssql
     environment:
-      SA_PASSWORD: ${DB_PASSWORD}
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD}
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Express"
     ports:
