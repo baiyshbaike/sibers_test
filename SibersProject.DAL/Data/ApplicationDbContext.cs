@@ -17,7 +17,7 @@ namespace SibersProject.DAL.Data
         // DbSets / Набор данных
         public DbSet<Employee> Employees{ get; set; }
         public DbSet<Project> Projects{ get; set; }
-        public DbSet<ProjectEmployee> EmployeesProjects{ get; set; }
+        public DbSet<ProjectEmployee> ProjectEmployees{ get; set; }
         public DbSet<TaskItem> TaskItems{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
