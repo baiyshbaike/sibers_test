@@ -7,24 +7,34 @@ namespace SibersProject.DAL.Entities;
 public class TaskItem
 {
     public Guid Id { get; set; }
-    // Task name / Называние задачи
+
+    // Task name / Название задачи
     public string Name { get; set; } = string.Empty;
+
     // Optional comment / Комментарий
     public string? Comment { get; set; }
+
     // Task priority / Приоритет задачи
     public int Priority { get; set; }
-    // Task status enum / Статус задачи 
+
+    // Task status enum / Статус задачи
     public TaskItemStatus Status { get; set; } = TaskItemStatus.ToDo;
+
     // FK to project / Внешний ключ на проект
     public Guid ProjectId { get; set; }
+
     // Navigation: project / Навигация: проект
     public Project Project { get; set; } = null!;
-    // FK to task executor (nullable) / Внешний ключ на исполнителя (может быть null)
-    public Guid? ExecutorId { get; set; }
-    // Navigation: exevutor / Навигация: исполнитель
-    public Employee? Executor { get; set; }
-    // FK to task author / Внешний ключ на автор
+
+    // FK to task author / Внешний ключ на автора задачи
     public Guid AuthorId { get; set; }
+
     // Navigation: author / Навигация: автор
     public Employee Author { get; set; } = null!;
+
+    // FK to task executor (nullable) / Внешний ключ на исполнителя (может быть null)
+    public Guid? ExecutorId { get; set; }
+
+    // Navigation: executor / Навигация: исполнитель
+    public Employee? Executor { get; set; }
 }
