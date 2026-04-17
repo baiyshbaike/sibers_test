@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SibersProject.BLL.DTOs.Task;
 using SibersProject.BLL.Services.Interfaces;
+using SibersProject.DAL.Entities.Identity;
 using SibersProject.DAL.Filters;
 
 namespace SibersProject.API.Controllers
@@ -10,6 +12,7 @@ namespace SibersProject.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Produces("application/json")]
+    [Authorize]
     public class TasksController : ControllerBase
     {
         private readonly ITaskService _taskService;
@@ -20,6 +23,8 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Get filtered tasks / Получить отфильтрованные задачи</summary>
+        // GET tasks: Supervisor, ProjectManager, Employee (own via filter)
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager + "," + ApplicationRoles.Employee)]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TaskItemDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] TaskFilter filter)
@@ -29,6 +34,7 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Get task by ID / Получить задачу по ID</summary>
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager + "," + ApplicationRoles.Employee)]
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(TaskItemDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -39,6 +45,8 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Create new task / Создать новую задачу</summary>
+        // POST/DELETE task: Supervisor, ProjectManager
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager)]
         [HttpPost]
         [ProducesResponseType(typeof(TaskItemDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -60,6 +68,8 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Update task / Обновить задачу</summary>
+        // PUT task (incl. status): Supervisor, ProjectManager, Employee
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager + "," + ApplicationRoles.Employee)]
         [HttpPut("{id:guid}")]
         [ProducesResponseType(typeof(TaskItemDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -80,6 +90,7 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Delete task / Удалить задачу</summary>
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager)]
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

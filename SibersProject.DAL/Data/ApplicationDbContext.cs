@@ -17,11 +17,11 @@ namespace SibersProject.DAL.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        // DbSets / Набор данных
-        public DbSet<Employee> Employees{ get; set; }
-        public DbSet<Project> Projects{ get; set; }
-        public DbSet<ProjectEmployee> ProjectEmployees{ get; set; }
-        public DbSet<TaskItem> TaskItems{ get; set; }
+        // DbSets / Набор данных (initialized by EF Core at runtime)
+        public DbSet<Employee> Employees { get; set; } = null!;
+        public DbSet<Project> Projects { get; set; } = null!;
+        public DbSet<ProjectEmployee> ProjectEmployees { get; set; } = null!;
+        public DbSet<TaskItem> TaskItems { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

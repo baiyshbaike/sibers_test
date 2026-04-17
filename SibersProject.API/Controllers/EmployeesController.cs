@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SibersProject.BLL.DTOs.Employee;
 using SibersProject.BLL.Services.Interfaces;
+using SibersProject.DAL.Entities.Identity;
 
 namespace SibersProject.API.Controllers
 {
@@ -9,6 +11,9 @@ namespace SibersProject.API.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
+    // Only authenticated users; create/update/delete restricted to Supervisor below
+    // Только аутентифицированные; создание/изменение/удаление — только Руководитель (ниже)
+    [Authorize]
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -48,6 +53,9 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Create a new employee / Создать нового сотрудника</summary>
+        // Only Supervisor can create/update/delete employees
+        // Только Руководитель может создавать/редактировать/удалять сотрудников
+        [Authorize(Roles = ApplicationRoles.Supervisor)]
         [HttpPost]
         [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -69,6 +77,9 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Update employee / Обновить сотрудника</summary>
+        // Only Supervisor can create/update/delete employees
+        // Только Руководитель может создавать/редактировать/удалять сотрудников
+        [Authorize(Roles = ApplicationRoles.Supervisor)]
         [HttpPut("{id:guid}")]
         [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -94,6 +105,9 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Delete employee / Удалить сотрудника</summary>
+        // Only Supervisor can create/update/delete employees
+        // Только Руководитель может создавать/редактировать/удалять сотрудников
+        [Authorize(Roles = ApplicationRoles.Supervisor)]
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

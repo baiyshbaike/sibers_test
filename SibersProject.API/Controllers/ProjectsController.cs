@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SibersProject.BLL.DTOs.Project;
 using SibersProject.BLL.Services.Interfaces;
+using SibersProject.DAL.Entities.Identity;
 using SibersProject.DAL.Filters;
 
 namespace SibersProject.API.Controllers
@@ -10,6 +12,7 @@ namespace SibersProject.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Produces("application/json")]
+    [Authorize]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectService _projectService;
@@ -23,6 +26,8 @@ namespace SibersProject.API.Controllers
         /// Get filtered and sorted projects
         /// Получить отфильтрованный и отсортированный список проектов
         /// </summary>
+        // GET projects: Supervisor, ProjectManager (own via filter), Employee (own via filter)
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager + "," + ApplicationRoles.Employee)]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ProjectDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] ProjectFilter filter)
@@ -32,6 +37,7 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Get project with details / Получить проект с подробностями</summary>
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager + "," + ApplicationRoles.Employee)]
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -42,6 +48,8 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Create new project / Создать новый проект</summary>
+        // POST/PUT/DELETE project: Supervisor, ProjectManager
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager)]
         [HttpPost]
         [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,6 +75,7 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Update project / Обновить проект</summary>
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager)]
         [HttpPut("{id:guid}")]
         [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,6 +100,7 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Delete project / Удалить проект</summary>
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager)]
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -110,6 +120,7 @@ namespace SibersProject.API.Controllers
         /// <summary>
         /// Add employee to project / Добавить сотрудника в проект
         /// </summary>
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager)]
         [HttpPost("{projectId:guid}/employees/{employeeId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -129,6 +140,7 @@ namespace SibersProject.API.Controllers
         /// <summary>
         /// Remove employee from project / Удалить сотрудника из проекта
         /// </summary>
+        [Authorize(Roles = ApplicationRoles.Supervisor + "," + ApplicationRoles.ProjectManager)]
         [HttpDelete("{projectId:guid}/employees/{employeeId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
