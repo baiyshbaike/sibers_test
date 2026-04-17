@@ -22,6 +22,7 @@ namespace SibersProject.DAL.Data
         public DbSet<Project> Projects { get; set; } = null!;
         public DbSet<ProjectEmployee> ProjectEmployees { get; set; } = null!;
         public DbSet<TaskItem> TaskItems { get; set; } = null!;
+        public DbSet<ProjectDocument> ProjectDocuments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +32,7 @@ namespace SibersProject.DAL.Data
             // Применяем все конфигурации из текущей сборки
             modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectConfigurationcs());
+            modelBuilder.ApplyConfiguration(new ProjectDocumentConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectEmployeeConfiguration());
             modelBuilder.ApplyConfiguration(new TaskItemConfigurations());
 

@@ -30,6 +30,7 @@ namespace SibersProject.DAL.Repositories
             var query = _dbSet
                 .Include(t => t.Author)
                 .Include(t => t.Executor)
+                .Include(t => t.Project)
                 .AsQueryable();
 
             // Filter by project / Фильтр по проекту
@@ -43,6 +44,10 @@ namespace SibersProject.DAL.Repositories
             // Filter by executor / Фильтр по исполнителю
             if (filter.ExecutorId.HasValue)
                 query = query.Where(t => t.ExecutorId == filter.ExecutorId.Value);
+
+            // Filter by project manager ownership / Фильтр по менеджеру проекта
+            if (filter.ProjectManagerId.HasValue)
+                query = query.Where(t => t.Project.ProjectManagerId == filter.ProjectManagerId.Value);
 
             // Apply sorting / Применяем сортировку
             query = filter.SortBy?.ToLower() switch

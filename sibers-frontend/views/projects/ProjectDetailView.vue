@@ -29,6 +29,26 @@ onMounted(() => projectsStore.fetchById(route.params.id as string))
           {{ emp.fullName }} — {{ emp.email }}
         </li>
       </ul>
+
+      <h2 class="font-semibold mt-6 mb-2">Documents ({{ projectsStore.current.documents?.length ?? 0 }})</h2>
+      <ul v-if="(projectsStore.current.documents?.length ?? 0) > 0" class="space-y-2">
+        <li
+          v-for="doc in projectsStore.current.documents"
+          :key="doc.id"
+          class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded text-sm"
+        >
+          <span>{{ doc.fileName }}</span>
+          <a
+            class="text-blue-600 hover:underline"
+            :href="projectsStore.getDocumentDownloadUrl(projectsStore.current.id, doc.id)"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Download
+          </a>
+        </li>
+      </ul>
+      <p v-else class="text-sm text-gray-400">No documents uploaded.</p>
     </div>
     <div v-else class="text-gray-400">Project not found.</div>
   </div>

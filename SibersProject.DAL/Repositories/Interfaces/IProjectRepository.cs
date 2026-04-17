@@ -23,5 +23,10 @@ namespace SibersProject.DAL.Repositories.Interfaces
 
         // Check if employee is on project / Проверить состоит ли сотрудник в проекте
         Task<bool> IsEmployeeOnProjectAsync(Guid projectId, Guid employeeId);
+
+        // Document metadata operations / Операции с метаданными документов
+        Task AddDocumentsAsync(IEnumerable<ProjectDocument> documents);
+        Task<ProjectDocument?> GetDocumentAsync(Guid projectId, Guid documentId);
+        Task RemoveDocumentAsync(ProjectDocument document);
     }
 }

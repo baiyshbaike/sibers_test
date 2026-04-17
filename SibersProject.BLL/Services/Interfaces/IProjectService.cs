@@ -16,5 +16,8 @@ namespace SibersProject.BLL.Services.Interfaces
         Task DeleteAsync(Guid id);
         Task AddEmployeeAsync(Guid projectId, Guid employeeId);
         Task RemoveEmployeeAsync(Guid projectId, Guid employeeId);
+        Task AddDocumentsAsync(Guid projectId, IEnumerable<CreateProjectDocumentDto> documents);
+        Task<ProjectDocumentStorageDto?> GetDocumentForDownloadAsync(Guid projectId, Guid documentId);
+        Task<ProjectDocumentStorageDto?> DeleteDocumentAsync(Guid projectId, Guid documentId);
     }
 }

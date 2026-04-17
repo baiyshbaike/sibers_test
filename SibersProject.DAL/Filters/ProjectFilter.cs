@@ -21,5 +21,10 @@ namespace SibersProject.DAL.Filters
 
         // Sort direction / Направление сортировки
         public bool SortDescending { get; set; } = false;
+
+        // Scope filters used by access-control layer.
+        // Фильтры области видимости для слоя контроля доступа.
+        public Guid? ProjectManagerId { get; set; }
+        public Guid? AssignedEmployeeId { get; set; }
     }
 }

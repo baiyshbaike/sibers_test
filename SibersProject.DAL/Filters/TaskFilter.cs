@@ -18,6 +18,9 @@ namespace SibersProject.DAL.Filters
         // Filter by exector / Фильтр по исполнитею
         public Guid? ExecutorId { get; set; }
 
+        // Scope filter for manager own projects / Фильтр области для проектов менеджера
+        public Guid? ProjectManagerId { get; set; }
+
         // Sort field: "name", "priority", "status", Поле для сортировки
         public string? SortBy { get; set; }
 

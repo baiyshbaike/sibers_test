@@ -59,5 +59,39 @@ export const useProjectsStore = defineStore('projects', () => {
     await fetchById(projectId)
   }
 
-  return { projects, current, loading, error, fetchAll, fetchById, create, update, remove, addEmployee, removeEmployee }
+  async function uploadDocuments(projectId: string, files: File[]): Promise<void> {
+    if (files.length === 0) return
+    const form = new FormData()
+    for (const file of files) form.append('files', file)
+    await apiClient.post(`/api/projects/${projectId}/documents`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    await fetchById(projectId)
+  }
+
+  function getDocumentDownloadUrl(projectId: string, documentId: string): string {
+    return `${apiClient.defaults.baseURL}/api/projects/${projectId}/documents/${documentId}/download`
+  }
+
+  async function deleteDocument(projectId: string, documentId: string): Promise<void> {
+    await apiClient.delete(`/api/projects/${projectId}/documents/${documentId}`)
+    await fetchById(projectId)
+  }
+
+  return {
+    projects,
+    current,
+    loading,
+    error,
+    fetchAll,
+    fetchById,
+    create,
+    update,
+    remove,
+    addEmployee,
+    removeEmployee,
+    uploadDocuments,
+    deleteDocument,
+    getDocumentDownloadUrl,
+  }
 })

@@ -18,5 +18,6 @@ namespace SibersProject.BLL.DTOs.Project
         public int Priority { get; set; }
         public EmployeeDto? ProjectManager { get; set; }
         public List<EmployeeDto> Employees { get; set; } = new();
+        public List<ProjectDocumentDto> Documents { get; set; } = new();
     }
 }

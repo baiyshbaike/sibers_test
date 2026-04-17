@@ -1,16 +1,14 @@
 <script setup lang="ts">
-// #список_проектов / #projects_list_view
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProjectsStore } from '@/stores/projects'
 import { useAuthStore } from '@/stores/auth'
 import type { ProjectFilter } from '@/types'
 
-const router        = useRouter()
+const router = useRouter()
 const projectsStore = useProjectsStore()
-const authStore     = useAuthStore()
+const authStore = useAuthStore()
 
-// Filter state / Состояние фильтров
 const filter = ref<ProjectFilter>({
   sortBy: 'name',
   sortDescending: false,
@@ -34,7 +32,7 @@ async function deleteProject(id: string) {
       <h1 class="text-2xl font-bold text-gray-800">Projects</h1>
       <RouterLink
         v-if="!authStore.isEmployee"
-        to="/projects/create"
+        to="/projects/upsert"
         class="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 text-sm font-medium"
       >
         + New Project
@@ -80,7 +78,6 @@ async function deleteProject(id: string) {
       </div>
     </div>
 
-    <!-- Loading / Загрузка -->
     <div v-if="projectsStore.loading" class="text-center py-10 text-gray-500">Loading...</div>
 
     <!-- Error / Ошибка -->
@@ -114,6 +111,13 @@ async function deleteProject(id: string) {
             @click="router.push(`/projects/${project.id}`)"
           >
             View
+          </button>
+          <button
+            v-if="!authStore.isEmployee"
+            class="text-blue-600 hover:underline text-sm"
+            @click="router.push(`/projects/upsert/${project.id}`)"
+          >
+            Edit
           </button>
           <button
             v-if="!authStore.isEmployee"

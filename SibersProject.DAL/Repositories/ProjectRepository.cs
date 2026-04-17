@@ -23,6 +23,7 @@ namespace SibersProject.DAL.Repositories
                 .Include(p => p.ProjectEmployees)
                     .ThenInclude(pe => pe.Employee)
                 .Include(p => p.Tasks)
+                .Include(p => p.Documents)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -33,6 +34,7 @@ namespace SibersProject.DAL.Repositories
                 .Include(p => p.ProjectManager)
                 .Include(p => p.ProjectEmployees)
                     .ThenInclude(pe => pe.Employee)
+                .Include(p => p.Documents)
                 .AsQueryable();
 
             // Apply date filters / Применяем фильтры по дате
@@ -45,6 +47,15 @@ namespace SibersProject.DAL.Repositories
             // Apply priority filter / Применяем фильтр по приоритету
             if (filter.Priority.HasValue)
                 query = query.Where(p => p.Priority == filter.Priority.Value);
+
+            // Apply scope filters / Применяем фильтры области доступа
+            if (filter.ProjectManagerId.HasValue)
+                query = query.Where(p => p.ProjectManagerId == filter.ProjectManagerId.Value);
+
+            if (filter.AssignedEmployeeId.HasValue)
+                query = query.Where(p =>
+                    p.ProjectManagerId == filter.AssignedEmployeeId.Value ||
+                    p.ProjectEmployees.Any(pe => pe.EmployeeId == filter.AssignedEmployeeId.Value));
 
             // Apply sorting / Применяем сортировку
             query = filter.SortBy?.ToLower() switch
@@ -90,6 +101,24 @@ namespace SibersProject.DAL.Repositories
         {
             return await _context.ProjectEmployees
                 .AnyAsync(pe => pe.ProjectId == projectId && pe.EmployeeId == employeeId);
+        }
+
+        public async Task AddDocumentsAsync(IEnumerable<ProjectDocument> documents)
+        {
+            await _context.ProjectDocuments.AddRangeAsync(documents);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<ProjectDocument?> GetDocumentAsync(Guid projectId, Guid documentId)
+        {
+            return await _context.ProjectDocuments
+                .FirstOrDefaultAsync(d => d.ProjectId == projectId && d.Id == documentId);
+        }
+
+        public async Task RemoveDocumentAsync(ProjectDocument document)
+        {
+            _context.ProjectDocuments.Remove(document);
+            await _context.SaveChangesAsync();
         }
     }
 }

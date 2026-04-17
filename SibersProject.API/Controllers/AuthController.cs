@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SibersProject.BLL.DTOs.Auth;
 using SibersProject.BLL.Services.Interfaces;
+using SibersProject.DAL.Entities.Identity;
 
 namespace SibersProject.API.Controllers
 {
@@ -19,9 +21,11 @@ namespace SibersProject.API.Controllers
         }
 
         /// <summary>Register new user / Зарегистрировать нового пользователя</summary>
+        [Authorize(Roles = ApplicationRoles.Supervisor)]
         [HttpPost("register")]
         [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {

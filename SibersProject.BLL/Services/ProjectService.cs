@@ -3,6 +3,7 @@ using SibersProject.BLL.Services.Interfaces;
 using SibersProject.DAL.Filters;
 using SibersProject.DAL.Repositories.Interfaces;
 using SibersProject.BLL.Mappings;
+using SibersProject.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -95,6 +96,56 @@ namespace SibersProject.BLL.Services
                 ?? throw new KeyNotFoundException($"Project with id '{projectId}' not found.");
 
             await _projectRepository.RemoveEmployeeAsync(projectId, employeeId);
+        }
+
+        public async Task AddDocumentsAsync(Guid projectId, IEnumerable<CreateProjectDocumentDto> documents)
+        {
+            _ = await _projectRepository.GetByIdAsync(projectId)
+                ?? throw new KeyNotFoundException($"Project with id '{projectId}' not found.");
+
+            var entities = documents.Select(d => new ProjectDocument
+            {
+                Id = d.Id,
+                ProjectId = projectId,
+                FileName = d.FileName,
+                StoredFileName = d.StoredFileName,
+                ContentType = d.ContentType,
+                Size = d.Size,
+                UploadedAtUtc = d.UploadedAtUtc
+            });
+
+            await _projectRepository.AddDocumentsAsync(entities);
+        }
+
+        public async Task<ProjectDocumentStorageDto?> GetDocumentForDownloadAsync(Guid projectId, Guid documentId)
+        {
+            var doc = await _projectRepository.GetDocumentAsync(projectId, documentId);
+            if (doc is null) return null;
+
+            return new ProjectDocumentStorageDto
+            {
+                Id = doc.Id,
+                ProjectId = doc.ProjectId,
+                FileName = doc.FileName,
+                StoredFileName = doc.StoredFileName,
+                ContentType = doc.ContentType
+            };
+        }
+
+        public async Task<ProjectDocumentStorageDto?> DeleteDocumentAsync(Guid projectId, Guid documentId)
+        {
+            var doc = await _projectRepository.GetDocumentAsync(projectId, documentId);
+            if (doc is null) return null;
+
+            await _projectRepository.RemoveDocumentAsync(doc);
+            return new ProjectDocumentStorageDto
+            {
+                Id = doc.Id,
+                ProjectId = doc.ProjectId,
+                FileName = doc.FileName,
+                StoredFileName = doc.StoredFileName,
+                ContentType = doc.ContentType
+            };
         }
     }
 }

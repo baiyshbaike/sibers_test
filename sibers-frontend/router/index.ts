@@ -24,9 +24,15 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/projects/create',
+      path: '/projects/upsert',
       name: 'ProjectCreate',
-      component: () => import('@/views/projects/ProjectWizardView.vue'),
+      component: () => import('@/views/projects/ProjectUpsertView.vue'),
+      meta: { requiresAuth: true, roles: ['Supervisor', 'ProjectManager'] },
+    },
+    {
+      path: '/projects/upsert/:id',
+      name: 'ProjectEdit',
+      component: () => import('@/views/projects/ProjectUpsertView.vue'),
       meta: { requiresAuth: true, roles: ['Supervisor', 'ProjectManager'] },
     },
     {
@@ -42,9 +48,45 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/employees/upsert',
+      name: 'EmployeeCreate',
+      component: () => import('@/views/employees/EmployeeUpsertView.vue'),
+      meta: { requiresAuth: true, roles: ['Supervisor'] },
+    },
+    {
+      path: '/employees/upsert/:id',
+      name: 'EmployeeEdit',
+      component: () => import('@/views/employees/EmployeeUpsertView.vue'),
+      meta: { requiresAuth: true, roles: ['Supervisor'] },
+    },
+    {
+      path: '/employees/:id',
+      name: 'EmployeeDetail',
+      component: () => import('@/views/employees/EmployeeDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/tasks',
       name: 'Tasks',
       component: () => import('@/views/tasks/TasksView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/tasks/upsert',
+      name: 'TaskCreate',
+      component: () => import('@/views/tasks/TaskUpsertView.vue'),
+      meta: { requiresAuth: true, roles: ['Supervisor', 'ProjectManager'] },
+    },
+    {
+      path: '/tasks/upsert/:id',
+      name: 'TaskEdit',
+      component: () => import('@/views/tasks/TaskUpsertView.vue'),
+      meta: { requiresAuth: true, roles: ['Supervisor', 'ProjectManager'] },
+    },
+    {
+      path: '/tasks/:id',
+      name: 'TaskDetail',
+      component: () => import('@/views/tasks/TaskDetailView.vue'),
       meta: { requiresAuth: true },
     },
     {

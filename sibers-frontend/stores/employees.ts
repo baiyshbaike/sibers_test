@@ -29,6 +29,13 @@ export const useEmployeesStore = defineStore('employees', () => {
     return data
   }
 
+  async function fetchByRole(role: string): Promise<Employee[]> {
+    const allowed = ['ProjectManager', 'Employee']
+    if (!allowed.includes(role)) return []
+    const { data } = await apiClient.get<Employee[]>(`/api/employees/by-role/${role}`)
+    return data
+  }
+
   async function create(dto: Omit<Employee, 'id' | 'fullName'>): Promise<void> {
     await apiClient.post('/api/employees', dto)
     await fetchAll()
@@ -44,5 +51,5 @@ export const useEmployeesStore = defineStore('employees', () => {
     await fetchAll()
   }
 
-  return { employees, loading, error, fetchAll, search, create, update, remove }
+  return { employees, loading, error, fetchAll, search, fetchByRole, create, update, remove }
 })

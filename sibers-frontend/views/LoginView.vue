@@ -7,8 +7,8 @@ import { useAuthStore } from '@/stores/auth'
 const router    = useRouter()
 const authStore = useAuthStore()
 
-const email    = ref('')
-const password = ref('')
+const email    = ref('superadmin@sibers.local')
+const password = ref('SuperAdmin123!')
 const error    = ref<string | null>(null)
 const loading  = ref(false)
 

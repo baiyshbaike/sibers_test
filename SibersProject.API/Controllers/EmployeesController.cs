@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using SibersProject.BLL.DTOs.Employee;
 using SibersProject.BLL.Services.Interfaces;
 using SibersProject.DAL.Entities.Identity;
@@ -17,9 +18,12 @@ namespace SibersProject.API.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
-        public EmployeesController(IEmployeeService employeeService)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public EmployeesController(IEmployeeService employeeService, UserManager<ApplicationUser> userManager)
         {
             _employeeService = employeeService;
+            _userManager = userManager;
         }
         /// <summary>Get all employees / Получить всех сотрудников</summary>
         [HttpGet]
@@ -50,6 +54,29 @@ namespace SibersProject.API.Controllers
         {
             var results = await _employeeService.SearchAsync(q);
             return Ok(results);
+        }
+
+        /// <summary>
+        /// Get employees linked to users in a specific role.
+        /// Получить сотрудников, привязанных к пользователям определенной роли.
+        /// </summary>
+        [HttpGet("by-role/{role}")]
+        [ProducesResponseType(typeof(IEnumerable<EmployeeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetByRole(string role)
+        {
+            if (role != ApplicationRoles.ProjectManager && role != ApplicationRoles.Employee)
+                return BadRequest(new { message = "Only ProjectManager and Employee roles are supported." });
+
+            var usersInRole = await _userManager.GetUsersInRoleAsync(role);
+            var employeeIds = usersInRole
+                .Where(u => u.EmployeeId.HasValue)
+                .Select(u => u.EmployeeId!.Value)
+                .ToHashSet();
+
+            var employees = await _employeeService.GetAllAsync();
+            var filtered = employees.Where(e => employeeIds.Contains(e.Id));
+            return Ok(filtered);
         }
 
         /// <summary>Create a new employee / Создать нового сотрудника</summary>

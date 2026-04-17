@@ -20,7 +20,16 @@ export interface Employee {
     priority: number
     projectManager?: Employee
     employees: Employee[]
+  documents: ProjectDocument[]
   }
+
+export interface ProjectDocument {
+  id: string
+  fileName: string
+  contentType: string
+  size: number
+  uploadedAtUtc: string
+}
   
   export interface TaskItem {
     id: string

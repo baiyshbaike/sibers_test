@@ -27,4 +27,6 @@ public class Project
     public ICollection<ProjectEmployee> ProjectEmployees { get; set; } = new List<ProjectEmployee>();
     // Navigation: project tasks / Навигация: задачи проекта
     public ICollection<TaskItem> Tasks { get; set; } = new List<TaskItem>();
+    // Navigation: project documents / Навигация: документы проекта
+    public ICollection<ProjectDocument> Documents { get; set; } = new List<ProjectDocument>();
 }

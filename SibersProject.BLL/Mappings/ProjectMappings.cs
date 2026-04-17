@@ -21,6 +21,16 @@ namespace SibersProject.BLL.Mappings
             ProjectManager = project.ProjectManager?.ToDto(),
             Employees = project.ProjectEmployees?
                 .Select(pe => pe.Employee.ToDto())
+                .ToList() ?? new(),
+            Documents = project.Documents?
+                .Select(d => new ProjectDocumentDto
+                {
+                    Id = d.Id,
+                    FileName = d.FileName,
+                    ContentType = d.ContentType,
+                    Size = d.Size,
+                    UploadedAtUtc = d.UploadedAtUtc
+                })
                 .ToList() ?? new()
         };
 
