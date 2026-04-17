@@ -7,19 +7,19 @@ namespace SibersProject.DAL.Entities;
 public class Project
 {
     public Guid Id { get; set; }
-    // Project name / Называние проекта
+    // Project name / Название проекта
     public string Name { get; set; } = string.Empty;
-    // Customer company name / Называние компании-зказчика
+    // Customer company name / Название компании-заказчика
     public string CustomerCompany { get; set; } = string.Empty;
-    // Contractor company name / Называние компании-исполнитея
+    // Contractor company name / Название компании-исполнителя
     public string ExecutorCompany { get; set; } = string.Empty; 
     // Project start date / Дата начала проекта
     public DateTime StartDate { get; set; }
     // Project and date / Дата окончания проекта 
     public DateTime EndDate { get; set; }
-    // Project priority (integer, highter = more priority) / Приоритет проекта
+    // Project priority (integer, higher = more priority) / Приоритет проекта
     public int Priority { get; set; }
-    // FK to the project manager / Внешний ключ на руоводителя проекта
+    // FK to the project manager / Внешний ключ на руководителя проекта
     public Guid ProjectManagerId { get; set; }
     // Navigation: project manager / Навигация: руководитель проекта
     public Employee ProjectManager { get; set; } = null!;

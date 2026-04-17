@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProjectsStore } from '@/stores/projects'
 import { useEmployeesStore } from '@/stores/employees'
+import { useAuthStore } from '@/stores/auth'
 import SearchableEmployeePicker from '@/src/components/common/SearchableEmployeePicker.vue'
 import type { Employee, ProjectDocument } from '@/types'
 
@@ -10,6 +11,7 @@ const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const employeesStore = useEmployeesStore()
+const authStore = useAuthStore()
 
 const isEdit = computed(() => !!route.params.id)
 const projectId = computed(() => (route.params.id as string | undefined) ?? '')
@@ -24,6 +26,7 @@ const selectedTeamIds = ref<string[]>([])
 const selectedManagerIds = ref<string[]>([])
 const files = ref<File[]>([])
 const existingDocuments = ref<ProjectDocument[]>([])
+const isDragging = ref(false)
 
 const form = ref({
   name: '',
@@ -62,6 +65,13 @@ onMounted(async () => {
       await projectsStore.fetchById(projectId.value)
       const p = projectsStore.current
       if (!p) return
+      
+      // Check if current Project Manager can access this project
+      if (authStore.isProjectManager && p.projectManager?.id !== authStore.user?.employeeId) {
+        router.push('/projects')
+        return
+      }
+      
       form.value = {
         name: p.name,
         customerCompany: p.customerCompany,
@@ -83,13 +93,22 @@ onMounted(async () => {
 
 function onFileInput(event: Event) {
   const input = event.target as HTMLInputElement
-  const picked = Array.from(input.files ?? [])
+  addFiles(Array.from(input.files ?? []))
+  input.value = ''
+}
+
+function onDrop(event: DragEvent) {
+  isDragging.value = false
+  const dropped = Array.from(event.dataTransfer?.files ?? [])
+  addFiles(dropped)
+}
+
+function addFiles(newFiles: File[]) {
   const existing = new Set(files.value.map((f) => `${f.name}|${f.size}`))
-  for (const file of picked) {
+  for (const file of newFiles) {
     const key = `${file.name}|${file.size}`
     if (!existing.has(key)) files.value.push(file)
   }
-  input.value = ''
 }
 
 function removeFile(name: string) {
@@ -197,18 +216,30 @@ async function deleteExistingDocument(documentId: string) {
           <label class="block text-sm mb-1">Project Documents</label>
           <ul v-if="existingDocuments.length > 0" class="mb-2 text-sm text-gray-600 space-y-1">
             <li v-for="doc in existingDocuments" :key="doc.id" class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
-              <a
+              <button
+                type="button"
                 class="text-blue-600 hover:underline"
-                :href="projectsStore.getDocumentDownloadUrl(projectId, doc.id)"
-                target="_blank"
-                rel="noopener noreferrer"
+                @click="projectsStore.downloadDocument(projectId, doc.id, doc.fileName)"
               >
                 {{ doc.fileName }}
-              </a>
+              </button>
               <button type="button" class="text-red-500 hover:underline" @click="deleteExistingDocument(doc.id)">Delete</button>
             </li>
           </ul>
-          <input type="file" multiple class="w-full border rounded-lg px-3 py-2" @change="onFileInput" />
+          <!-- Drag & drop zone / Зона drag & drop -->
+          <div
+            class="border-2 border-dashed rounded-xl p-6 text-center transition-colors mb-2"
+            :class="isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-400'"
+            @dragover.prevent="isDragging = true"
+            @dragleave="isDragging = false"
+            @drop.prevent="onDrop"
+          >
+            <p class="text-gray-500 mb-2 text-sm">Drag & drop files here, or</p>
+            <label class="cursor-pointer bg-blue-700 text-white px-4 py-1.5 rounded-lg hover:bg-blue-800 text-sm">
+              Browse Files
+              <input type="file" multiple class="hidden" @change="onFileInput" />
+            </label>
+          </div>
           <ul v-if="files.length > 0" class="mt-2 text-sm text-gray-600 space-y-1">
             <li v-for="file in files" :key="file.name" class="flex justify-between">
               <span>{{ file.name }}</span>

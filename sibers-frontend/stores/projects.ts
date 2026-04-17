@@ -73,6 +73,22 @@ export const useProjectsStore = defineStore('projects', () => {
     return `${apiClient.defaults.baseURL}/api/projects/${projectId}/documents/${documentId}/download`
   }
 
+  // Download document via axios (includes JWT token) and trigger browser save
+  // Скачивание документов через axios (включает JWT-токен) с сохранением в браузере
+  async function downloadDocument(projectId: string, documentId: string, fileName: string): Promise<void> {
+    const { data } = await apiClient.get(`/api/projects/${projectId}/documents/${documentId}/download`, {
+      responseType: 'blob',
+    })
+    const url = window.URL.createObjectURL(new Blob([data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+  }
+
   async function deleteDocument(projectId: string, documentId: string): Promise<void> {
     await apiClient.delete(`/api/projects/${projectId}/documents/${documentId}`)
     await fetchById(projectId)
@@ -93,5 +109,6 @@ export const useProjectsStore = defineStore('projects', () => {
     uploadDocuments,
     deleteDocument,
     getDocumentDownloadUrl,
+    downloadDocument,
   }
 })

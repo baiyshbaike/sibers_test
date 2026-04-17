@@ -72,6 +72,8 @@ export interface ProjectDocument {
   export interface ProjectFilter {
     startDateFrom?: string
     startDateTo?: string
+    endDateFrom?: string
+    endDateTo?: string
     priority?: number
     sortBy?: string
     sortDescending?: boolean

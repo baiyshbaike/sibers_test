@@ -38,14 +38,12 @@ onMounted(() => projectsStore.fetchById(route.params.id as string))
           class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded text-sm"
         >
           <span>{{ doc.fileName }}</span>
-          <a
+          <button
             class="text-blue-600 hover:underline"
-            :href="projectsStore.getDocumentDownloadUrl(projectsStore.current.id, doc.id)"
-            target="_blank"
-            rel="noopener noreferrer"
+            @click="projectsStore.downloadDocument(projectsStore.current.id, doc.id, doc.fileName)"
           >
             Download
-          </a>
+          </button>
         </li>
       </ul>
       <p v-else class="text-sm text-gray-400">No documents uploaded.</p>

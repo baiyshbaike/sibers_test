@@ -50,6 +50,14 @@ async function deleteProject(id: string) {
         <input v-model="filter.startDateTo" type="date" class="border rounded px-2 py-1 text-sm" />
       </div>
       <div>
+        <label class="text-xs text-gray-500 block mb-1">End date from</label>
+        <input v-model="filter.endDateFrom" type="date" class="border rounded px-2 py-1 text-sm" />
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 block mb-1">End date to</label>
+        <input v-model="filter.endDateTo" type="date" class="border rounded px-2 py-1 text-sm" />
+      </div>
+      <div>
         <label class="text-xs text-gray-500 block mb-1">Priority</label>
         <input v-model.number="filter.priority" type="number" min="1" class="border rounded px-2 py-1 text-sm w-20" />
       </div>
@@ -113,14 +121,14 @@ async function deleteProject(id: string) {
             View
           </button>
           <button
-            v-if="!authStore.isEmployee"
+            v-if="!authStore.isEmployee && (!authStore.isProjectManager || project.projectManager?.id === authStore.user?.employeeId)"
             class="text-blue-600 hover:underline text-sm"
             @click="router.push(`/projects/upsert/${project.id}`)"
           >
             Edit
           </button>
           <button
-            v-if="!authStore.isEmployee"
+            v-if="!authStore.isEmployee && (!authStore.isProjectManager || project.projectManager?.id === authStore.user?.employeeId)"
             class="text-red-500 hover:underline text-sm"
             @click="deleteProject(project.id)"
           >

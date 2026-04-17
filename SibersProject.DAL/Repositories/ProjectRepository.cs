@@ -44,6 +44,13 @@ namespace SibersProject.DAL.Repositories
             if (filter.StartDateTo.HasValue)
                 query = query.Where(p => p.StartDate <= filter.StartDateTo.Value);
 
+            // Apply end date filters / Применяем фильтры по дате окончания
+            if (filter.EndDateFrom.HasValue)
+                query = query.Where(p => p.EndDate >= filter.EndDateFrom.Value);
+
+            if (filter.EndDateTo.HasValue)
+                query = query.Where(p => p.EndDate <= filter.EndDateTo.Value);
+
             // Apply priority filter / Применяем фильтр по приоритету
             if (filter.Priority.HasValue)
                 query = query.Where(p => p.Priority == filter.Priority.Value);

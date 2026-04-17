@@ -8,12 +8,15 @@ namespace SibersProject.DAL.Filters
     // Filter and sorting parametres for project queries
     public class ProjectFilter
     {
-        // FIlter by start date range / Фильтр по диапозону дата начала
+        // Filter by start date range / Фильтр по диапазону даты начала
         public DateTime? StartDateFrom {  get; set; }
         public DateTime? StartDateTo { get;set; }
 
+        // Filter by end date range / Фильтр по диапазону даты окончания
+        public DateTime? EndDateFrom { get; set; }
+        public DateTime? EndDateTo { get; set; }
 
-        // Filter by exect priority / Фильтр по приоритету
+        // Filter by exact priority / Фильтр по приоритету
         public int? Priority { get; set; }
 
         // Sort field: "name", "startDate", "endDate", "priority" / Поле для сортировки

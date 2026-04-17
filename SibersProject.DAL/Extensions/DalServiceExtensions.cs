@@ -20,7 +20,7 @@ namespace SibersProject.DAL.Extensions
             this IServiceCollection services,
             string connectionString)
         {
-            // register EF Core with SQL Server / Регисттрируем EF Core с SQL Server
+            // register EF Core with SQL Server / Регистрируем EF Core с SQL Server
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
             // Register ASP.NET Core Identity / Регистрируем Identity

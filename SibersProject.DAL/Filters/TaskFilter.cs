@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SibersProject.DAL.Filters
 {
-    // #фильтр_задач / #task_tilter
+    // #фильтр_задач / #task_filter
     // Filter and sorting parameters for task queries
     public class TaskFilter
     {
@@ -15,7 +15,7 @@ namespace SibersProject.DAL.Filters
         // Filter by status / Фильтр по статусу
         public TaskItemStatus? Status { get; set; }
 
-        // Filter by exector / Фильтр по исполнитею
+        // Filter by executor / Фильтр по исполнителю
         public Guid? ExecutorId { get; set; }
 
         // Scope filter for manager own projects / Фильтр области для проектов менеджера
@@ -24,7 +24,7 @@ namespace SibersProject.DAL.Filters
         // Sort field: "name", "priority", "status", Поле для сортировки
         public string? SortBy { get; set; }
 
-        // Sort direction / Напрваление сортировки
+        // Sort direction / Направление сортировки
         public bool SortDescending { get; set; }
     }
 }

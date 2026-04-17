@@ -8,7 +8,7 @@ using System.Text;
 namespace SibersProject.DAL.Repositories
 {
     // #базовы_репозиторий / #generic_repository
-    // Generic base repository with common GRUD operations
+    // Generic base repository with common CRUD operations
     public class GenericRepository<T> : IRepository<T> where T : class
     {
         protected readonly ApplicationDbContext _context;

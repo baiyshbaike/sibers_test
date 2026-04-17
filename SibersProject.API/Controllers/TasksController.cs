@@ -152,6 +152,14 @@ namespace SibersProject.API.Controllers
                 {
                     if (!await CanManageProjectByIdAsync(existing.ProjectId))
                         return Forbid();
+                    // Additional check: Project Manager can only edit tasks in their own projects
+                    // Дополнительная проверка: Project Manager может редактировать только задачи в своих проектах
+                    var currentEmployeeId = TryGetEmployeeIdFromClaims();
+                    if (!currentEmployeeId.HasValue)
+                        return Forbid();
+                    var project = await _projectService.GetByIdAsync(existing.ProjectId);
+                    if (project?.ProjectManager?.Id != currentEmployeeId.Value)
+                        return Forbid();
                 }
 
                 if (dto.ExecutorId.HasValue && !await IsEmployeeAsync(dto.ExecutorId.Value))
