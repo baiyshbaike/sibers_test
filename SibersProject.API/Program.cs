@@ -2,11 +2,10 @@
 // Main entry point: loads config, registers services, configures middleware
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using SibersProject.API.Extensions;
 using SibersProject.BLL.Extensions;
-using SibersProject.DAL.Data;
 using SibersProject.DAL.Extensions;
 using System.Text;
 
@@ -104,22 +103,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Apply migrations + seed roles on startup
-// ????????? ???????? ? ?????? ???? ??? ???????
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole>>();
-
-    db.Database.Migrate();
-
-    // Seed roles if they don't exist / ?????? ???? ???? ?? ???
-    foreach (var role in SibersProject.DAL.Entities.Identity.ApplicationRoles.All)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(role));
-    }
-}
+// Apply migrations + seed identity data at startup.
+// Применяем миграции и заполняем identity-данные при запуске.
+await app.ApplyMigrationsAndSeedIdentityAsync();
 
 
 // Configure the HTTP request pipeline.

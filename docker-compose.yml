@@ -29,6 +29,12 @@
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: ${JWT_ISSUER}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+      JWT_EXPIRES_HOURS: ${JWT_EXPIRES_HOURS}
+      SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL}
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD}
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
     ports:
@@ -36,6 +42,18 @@
     depends_on:
       mssql:
         condition: service_healthy
+    networks:
+      - sibers_network
+  # Vue 3 Frontend / Фронтенд
+  frontend:
+    build:
+      context: ./sibers-frontend
+      dockerfile: Dockerfile
+    container_name: sibers_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
     networks:
       - sibers_network
 

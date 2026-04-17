@@ -33,3 +33,5 @@ msbuild.wrn
 .idea
 .qodo
 .env
+node_modules/
+dist/
