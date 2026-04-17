@@ -79,7 +79,7 @@ namespace SibersProject.Tests.Services
             // Arrange
             var managerId = Guid.NewGuid();
             _employeeRepoMock.Setup(r => r.GetByIdAsync(managerId))
-                .ReturnsAsync(new Employee { Id = managerId });
+                .ReturnsAsync(new Employee { Id = managerId, FirstName = "Manager", LastName = "User", Email = "manager@test.com" });
 
             var dto = new CreateProjectDto
             {
@@ -147,7 +147,7 @@ namespace SibersProject.Tests.Services
             _projectRepoMock.Setup(r => r.GetByIdAsync(projectId))
                 .ReturnsAsync(new Project { Id = projectId });
             _employeeRepoMock.Setup(r => r.GetByIdAsync(employeeId))
-                .ReturnsAsync(new Employee { Id = employeeId });
+                .ReturnsAsync(new Employee { Id = employeeId, FirstName = "Emp", LastName = "User", Email = "emp@test.com" });
             _projectRepoMock.Setup(r => r.AddEmployeeAsync(projectId, employeeId))
                 .Returns(Task.CompletedTask);
 

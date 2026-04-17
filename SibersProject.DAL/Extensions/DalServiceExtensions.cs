@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SibersProject.DAL.Data;
+using SibersProject.DAL.Entities.Identity;
 using SibersProject.DAL.Repositories;
 using SibersProject.DAL.Repositories.Interfaces;
 using System;
@@ -19,6 +22,18 @@ namespace SibersProject.DAL.Extensions
         {
             // register EF Core with SQL Server / Регисттрируем EF Core с SQL Server
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+
+            // Register ASP.NET Core Identity / Регистрируем Identity
+            services.AddIdentityCore<ApplicationUser>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.User.RequireUniqueEmail = true;
+            })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Register repositories / Регистрируем репозитории
             services.AddScoped<IEmployeeRepository,EmployeeRepository>();

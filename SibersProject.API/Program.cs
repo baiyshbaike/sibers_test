@@ -1,22 +1,26 @@
-// #точка_входа / #application_entry_point
+// #?????_????? / #application_entry_point
 // Main entry point: loads config, registers services, configures middleware
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using SibersProject.BLL.Extensions;
 using SibersProject.DAL.Data;
 using SibersProject.DAL.Extensions;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Load .env file for local development (outside Docker)
-// Загружаем .env файл для локальной разработки (вне Docker)
+// ????????? .env ???? ??? ????????? ?????????? (??? Docker)
 var envFile = Path.Combine(Directory.GetCurrentDirectory(), "..", ".env");
 if (!File.Exists(envFile))
     DotNetEnv.Env.Load(envFile);
 
 
 // Build connection string from environment variables
-// Строим строку подключения из переменных окружения
+// ?????? ?????? ??????????? ?? ?????????? ?????????
 var dbServer = Environment.GetEnvironmentVariable("DB_SERVER") ?? "localhost";
 var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "1433";
 var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "SibersProjectDb";
@@ -26,13 +30,40 @@ var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "YourStron
 var connectionString =
     $"Server={dbServer},{dbPort};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True";
 
-// Register layers via extension methods / Регистрируем слои через методы расширения
+
+// Read JWT settings from env / ?????? JWT ????????? ?? ?????????? ?????????
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "DefaultSecretKeyPleaseChangeInProduction!";
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "SibersAPI";
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "SibersClient";
+
+// Register layers via extension methods / ???????????? ???? ????? ?????? ??????????
 builder.Services.AddDalServices(connectionString);
 builder.Services.AddBllServices();
 
+// JWT Authentication / ?????????????? ????? JWT
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
+        };
+    });
+
+builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
-// Swagger / OpenAPI
+// Swagger with JWT support / Swagger ? ?????????? JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -40,31 +71,56 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Sibers Project Manager API",
         Version = "v1",
-        Description = "Backend API for project and employee management / API для управления проектами и сотрудниками"
+        Description = "Backend API / API ??? ?????????? ?????????"
     });
 
-    // Include XML comments for Swagger / Включаем XML комментарии для Swagger
-    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-        options.IncludeXmlComments(xmlPath);
+    // Add JWT Bearer button to Swagger UI / ?????? ??????????? ? Swagger UI
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter: Bearer {your JWT token}"
+    });
+
+    // Security requirement can be added here if needed for current OpenAPI package model.
 });
 
-// CORS — allow all origins for development / Разрешаем все источники для разработки
+// CORS ? allow frontend origin / ????????? ???????? ?????????
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowFrontend", policy =>
+        policy
+            .WithOrigins(
+                "http://localhost:5173",  // Vite dev server
+                "http://localhost:3000"   // Docker frontend
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
 });
 
 var app = builder.Build();
 
-// Apply migrations automatically on startup / Автоматически применяем миграции при запуске
+// Apply migrations + seed roles on startup
+// ????????? ???????? ? ?????? ???? ??? ???????
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole>>();
+
     db.Database.Migrate();
+
+    // Seed roles if they don't exist / ?????? ???? ???? ?? ???
+    foreach (var role in SibersProject.DAL.Entities.Identity.ApplicationRoles.All)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(role));
+    }
 }
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -73,16 +129,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sibers API v1");
-        c.RoutePrefix = string.Empty; // Swagger at root / Swagger на корневом пути
+        c.RoutePrefix = string.Empty; // Swagger at root / Swagger ?? ???????? ????
     });
 }
 
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
 
-// Make Program accessible for integration tests / Делаем Program доступным для тестов
+// Make Program accessible for integration tests / ?????? Program ????????? ??? ??????
 public partial class Program { }

@@ -16,6 +16,7 @@ namespace SibersProject.BLL.Extensions
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }

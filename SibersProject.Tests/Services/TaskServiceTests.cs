@@ -47,7 +47,7 @@ namespace SibersProject.Tests.Services
             _projectRepoMock.Setup(r => r.GetByIdAsync(projectId))
                 .ReturnsAsync(new Project { Id = projectId, Name = "Test Project" });
             _employeeRepoMock.Setup(r => r.GetByIdAsync(authorId))
-                .ReturnsAsync(new Employee { Id = authorId });
+                .ReturnsAsync(new Employee { Id = authorId, FirstName = "Author", LastName = "User", Email = "author@test.com" });
             _taskRepoMock.Setup(r => r.CreateAsync(It.IsAny<TaskItem>()))
                 .ReturnsAsync((TaskItem t) => t);
 
@@ -60,7 +60,7 @@ namespace SibersProject.Tests.Services
                 ProjectId = projectId,
                 AuthorId = authorId,
                 Project = new Project { Id = projectId, Name = "Test Project" },
-                Author = new Employee { Id = authorId, FirstName = "Ivan", LastName = "Petrov" }
+                Author = new Employee { Id = authorId, FirstName = "Ivan", LastName = "Petrov", Email = "ivan.petrov@test.com" }
             };
 
             _taskRepoMock.Setup(r => r.GetWithDetailsAsync(It.IsAny<Guid>()))
@@ -106,7 +106,7 @@ namespace SibersProject.Tests.Services
                 Status = TaskItemStatus.InProgress,
                 Priority = 2,
                 Project = new Project { Name = "P" },
-                Author = new Employee { FirstName = "A", LastName = "B" }
+                Author = new Employee { FirstName = "A", LastName = "B", Email = "ab@test.com" }
             };
 
             _taskRepoMock.Setup(r => r.GetWithDetailsAsync(taskId)).ReturnsAsync(updatedTask);
